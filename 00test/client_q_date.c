@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <netinet/sctp.h>
 #include <arpa/inet.h>
-// #include "common.h"
+#include <errno.h>
 #define MAX_BUFFER 256
 #define MY_PORT_NUM 2222
 #define LOCALTIME_STREAM 256
@@ -87,7 +87,10 @@ int main()
 		//从connSock参数所指定的 SCTP 端点接收消息, buff是消息内容
 		in = sctp_recvmsg(connSock, (void *)buffer, sizeof(buffer),
 						  (struct sockaddr *)NULL, 0, &sndrcvinfo, &flags);
-
+		if(in < 0){
+			printf("sctp_revmsg ");
+			exit(errno);
+		}
 		if (in > 0)
 		{
 			buffer[in] = 0;
