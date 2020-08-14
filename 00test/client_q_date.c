@@ -14,20 +14,30 @@
 #define GMT_STREAM 256
 int main()
 {
-	int connSock, in, i, flags;
+	int connSock, in, i, flags, ret;
 	struct sockaddr_in servaddr;
 	struct sctp_sndrcvinfo sndrcvinfo;
 	struct sctp_event_subscribe events;
 	char buffer[MAX_BUFFER + 1];
 	/* Create an SCTP TCP-Style Socket */
 	connSock = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
+	if(connSock == -1)
+	{
+		printf("socket err\n");
+		exit(-1);
+	}
 	/* Specify the peer endpoint to which we'll connect */
 	bzero((void *)&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(MY_PORT_NUM);
 	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	/* Connect to the server */
-	connect(connSock, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	ret = connect(connSock, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	if(ret == -1)
+	{
+		printf("connect err\n");
+		exit(-1);
+	}
 	/* Enable receipt of SCTP Snd/Rcv Data via sctp_recvmsg */
 	memset((void *)&events, 0, sizeof(events));
 	events.sctp_data_io_event = 1;
@@ -40,6 +50,12 @@ int main()
 						  (struct sockaddr *)NULL, 0,
 						  &sndrcvinfo, &flags);
 		/* Null terminate the incoming string */
+		if(in < 0)
+		{
+			printf("sctp err ");
+			exit(-1);
+		}
+		printf ("\n-----data-----%d\n", strlen(buffer));
 		buffer[in] = 0;
 		if (sndrcvinfo.sinfo_stream == LOCALTIME_STREAM)
 		{

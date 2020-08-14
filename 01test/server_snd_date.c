@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <netinet/sctp.h>
+#include <errno.h>
 // #include "common.h"
 #define MAX_BUFFER 256
 #define MY_PORT_NUM 2222
@@ -41,15 +42,41 @@ int main()
         currentTime = time(NULL);
         /* Send local time on stream 0 (local time stream) */
         snprintf(buffer, MAX_BUFFER, "%s\n", ctime(&currentTime));
+	printf("server:buffer = %s\n", buffer);
         ret = sctp_sendmsg(connSock,
                            (void *)buffer, (size_t)strlen(buffer),
-                           NULL, 0, 0, 0, LOCALTIME_STREAM, 0, 0);
+                           (struct sockaddr*)NULL, 0, 0, 0, LOCALTIME_STREAM, 0, 0);
+	if(ret < 0)
+	{
+		//printf("server: sctp_sendmsg err ret = %d\n", ret);
+		//printf("server errno = %d", errno);
+		if(errno != 0){
+        		printf("sctp_sendmsg:%d\n", errno);
+        		//exit(0);
+		}
+		//perror("sctp_sendmsg:");
+		//exit(-1);
+	}
         /* Send GMT on stream 1 (GMT stream) */
         snprintf(buffer, MAX_BUFFER, "%s\n",
                  asctime(gmtime(&currentTime)));
         ret = sctp_sendmsg(connSock,
                            (void *)buffer, (size_t)strlen(buffer),
-                           NULL, 0, 0, 0, GMT_STREAM, 0, 0);
+                           (struct sockaddr*)NULL, 0, 0, 0, GMT_STREAM, 0, 0);
+	if(ret < 0)
+        {
+                //printf("server: sctp_sendmsg err ret = %d\n", ret);
+		//printf("server errno = %d", errno);
+		//perror("sctp_sendmsg:");
+		if(errno != 0){
+                        printf(" sctp_sendmsg:%d\n", errno);
+		}
+                        //exit(0);
+                        //                }
+                        //
+               // exit(-1);
+        }
+
         /* Close the client connection */
         close(connSock);
     }
