@@ -55,10 +55,10 @@ int main()
 	ret = getsockopt(connSock, SOL_SCTP, SCTP_STATUS,
 					 (void *)&status, (socklen_t *)&in);
 
-	printf("assoc id = %d\n", status.sstat_assoc_id);
+	/*printf("assoc id = %d\n", status.sstat_assoc_id);
 	printf("state = %d\n", status.sstat_state);
 	printf("instrms = %d\n", status.sstat_instrms);
-	printf("outstrms = %d\n", status.sstat_outstrms);
+	printf("outstrms = %d\n", status.sstat_outstrms);*/
 
 	/* Expect two messages from the peer */
 
