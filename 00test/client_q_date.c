@@ -25,7 +25,11 @@ int main()
 	/* Create an SCTP TCP-Style Socket */
 	/*创建套接字,协议族AP_INET:IP，socket类型SOCKET:有序的、可靠的，IPPROTO_SCTP:指定为SCTP协议*/
 	connSock = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP);
-
+	if(connSock == -1)
+	{
+		printf("Socket ");
+		exit(errno);
+	}
 	/* Specify that a maximum of 5 streams will be available per socket */
 	memset(&initmsg, 0, sizeof(initmsg));
 	initmsg.sinit_num_ostreams = 5;//应用进程想要请求的外出sctp流的数目
@@ -43,17 +47,33 @@ int main()
 
 	/* Connect to the server 建立连接*/
 	ret = connect(connSock, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	if(ret == -1)
+	{
+		printf("connect ");
+		exit(errno);
+	}
 
 	/* Enable receipt of SCTP Snd/Rcv Data via sctp_recvmsg */
+	events.sctp_data_io_event = 1;
 	memset((void *)&events, 0, sizeof(events));
 	events.sctp_data_io_event = 1;
 	ret = setsockopt(connSock, SOL_SCTP, SCTP_EVENTS,
 					 (const void *)&events, sizeof(events));//事件注册
+	if(ret == -1)
+	{
+		printf("setsockopt event");
+		exit(errno);
+	}
 
 	/* Read and emit the status of the Socket (optional step) */
 	in = sizeof(status);
 	ret = getsockopt(connSock, SOL_SCTP, SCTP_STATUS,
 					 (void *)&status, (socklen_t *)&in);
+	if(ret == -1)
+	{
+		printf("setsockopt ");
+		exit(errno);
+	}
 
 	/*printf("assoc id = %d\n", status.sstat_assoc_id);
 	printf("state = %d\n", status.sstat_state);
