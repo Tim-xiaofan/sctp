@@ -8,8 +8,8 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <netinet/sctp.h>
-#define  MY_PORT_NUM = 8080
-#define  MAX_BUFFER = 1024
+#define  MY_PORT_NUM  8080
+#define  MAX_BUFFER  1024
 
 int main(int argc, char *argv[])
 {
