@@ -51,7 +51,7 @@ int main()
 		//printf("server: sctp_sendmsg err ret = %d\n", ret);
 		//printf("server errno = %d", errno);
 		if(errno != 0){
-        		printf("sctp_sendmsg:%d\n", errno);
+        		perror("sctp_sendmsg");
         		//exit(0);
 		}
 		//perror("sctp_sendmsg:");
@@ -69,7 +69,7 @@ int main()
 		//printf("server errno = %d", errno);
 		//perror("sctp_sendmsg:");
 		if(errno != 0){
-                        printf(" sctp_sendmsg:%d\n", errno);
+                        perror("sctp_sendmsg");
 		}
                         //exit(0);
                         //                }
