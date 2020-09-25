@@ -10,8 +10,8 @@
 #include <errno.h>
 #define MAX_BUFFER 256
 #define MY_PORT_NUM 2222
-#define LOCALTIME_STREAM 256
-#define GMT_STREAM 256
+#define LOCALTIME_STREAM 0
+#define GMT_STREAM 1
 int main()
 {
 	int connSock, in, i, flags, ret;
@@ -35,9 +35,10 @@ int main()
 	ret = connect(connSock, (struct sockaddr *)&servaddr, sizeof(servaddr));
 	if(ret == -1)
 	{
-		printf("connect err\n");
-		exit(-1);
+		perror("connect");
+		exit(errno);
 	}
+	printf("connect success to %s, port %d, sock %d\n", inet_ntoa(servaddr.sin_addr), ntohs(servaddr.sin_port), connSock);
 	/* Enable receipt of SCTP Snd/Rcv Data via sctp_recvmsg */
 	memset((void *)&events, 0, sizeof(events));
 	events.sctp_data_io_event = 1;
@@ -52,10 +53,10 @@ int main()
 		/* Null terminate the incoming string */
 		if(in < 0)
 		{
-			printf("sctp err ");
-			exit(-1);
+			perror("sctp_recvmsg");
+			exit(errno);
 		}
-		printf ("\n-----data-----%d\n", strlen(buffer));
+		printf ("\n-----data-----%ld\n", strlen(buffer));
 		buffer[in] = 0;
 		if (sndrcvinfo.sinfo_stream == LOCALTIME_STREAM)
 		{
